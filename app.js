@@ -5,23 +5,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var orm = require('orm');
-
+var auth_middle = require('./middleware/auth');
 
 //Controllers
 var supervisorController = require('./controllers/supervisor');
 var employeeController = require('./controllers/employee');
 
 var app = express();
-
-var opts = {
-  database: "daily_app",
-  protocol: "mysql",
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: ""
-}
-
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -36,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
 app.use('/supervisors', supervisorController);
+//Protected routes
+app.use(auth_middle);
 app.use('/employees', employeeController);
 
 // catch 404 and forward to error handler
