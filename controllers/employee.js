@@ -41,6 +41,7 @@ router.get('/:id', function(req, res, next){
 	});
 });
 
+/**POST a single employee*/
 router.post('/', function(req, res, next){
 	console.log('POST: employee', req.body);
 	if(!req.body){
@@ -49,7 +50,7 @@ router.post('/', function(req, res, next){
 
   req.models.employee.create(req.body, function(err, createdItem){
     if(err){
-      res.status(204).json({error: true, message: 'Error posting employee'});
+      res.status(204).json({error: true, message: err});
     }
       res.status(201)
           .json({createdItem: createdItem});

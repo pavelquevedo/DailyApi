@@ -32,31 +32,6 @@ router.use(orm.express(database.connectionString, {
   }
 }));
 
-/*GET: Supervisor login*/
-router.post('/login', function(req, res, next){
-	console.log('GET: supervisor login', req.body);
-	if(!req.body){
-		res.status(403).json({error:true, message: 'Body empty'});
-	}
-	req.models.supervisor.find({email: req.body.email}, function(err, supervisors){
-		if(err) return next(err);
-		if(supervisors.length > 0){
-			var supervisor = supervisors[0];
-			if(supervisor.pass == encrypt(req.body.pass)){
-				var token = jwt.sign(supervisor, config.secret, {
-					expiresIn: '24hr'
-				});
-
-				res.status(201).json({token: token});	
-			}else{
-				res.status(403).json({error:true, message: 'Wrong password'});
-			}
-		}else{
-			res.status(403).json({error:true, message: 'Supervisor doesnt exists'});
-		}	
-	})
-});
-
 /* GET: supervisors listing. */
 router.get('/', function(req, res, next) {
   console.log('GET: supervisors list', req.body);
@@ -90,23 +65,28 @@ router.get('/:id', function(req,res,next){
 router.get('/getEmployees/:id', function(req,res,next){
 	console.log('GET: supervisors employees by ID', req.params.id);
 	if(!req.params.id){
-		if(!req.body){
-			res.status(403).json({error: true, message: 'Petition empty'});
-		}
+		res.status(403).json({error: true, message: 'Petition empty'});
 	}
 
 	req.models.supervisor.get(req.params.id, function(err, supervisor){
-	    if(err) return next(err);
-	    if(supervisor){
-	    	supervisor.getEmployees(function(err, employees){
-	      		if(employees){
-	      			res.status(200).json({employees: employees});
-	      		}else{
-	      			res.status(403).json({error: true, message: 'Employees not found'});
-	      		}
-	    	});
+	    if(err){
+	    	res.status(403).json({error: true, message: err});
 	    }else{
-	    	res.status(403).json({error: true, message: 'Supervisor not found'});
+	    	if(supervisor){
+		    	supervisor.getEmployees(function(err, employees){
+		      		if(err){
+		      			res.status(403).json({error: true, message: err});
+		      		}else{
+		      			if(employees){
+			      			res.status(200).json({employees: employees});
+			      		}else{
+			      			res.status(403).json({error: true, message: 'Employees not found'});
+			      		}
+		      		}
+		    	});
+		    }else{
+		    	res.status(403).json({error: true, message: 'Supervisor not found'});
+		    }
 	    }
 	});
 });
@@ -121,7 +101,9 @@ router.post('/', function(req, res, next){
 	var newUser = {
 		name: req.body.name,
 		pass: encrypt(req.body.pass),
-		email: req.body.email
+		active: req.body.active,
+		email: req.body.email,
+		cod_vehiculo: req.body.cod_vehiculo
 	}
 
 	req.models.supervisor.find({ email: req.body.email }, function(err, supervisors){
