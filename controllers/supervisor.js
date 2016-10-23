@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
   console.log('GET: supervisors list', req.body);
 	req.models.supervisor.find({}, function(err, supervisors){
 	  	if(supervisors){
-		  	res.status(200).json({supervisors: supervisors});
+		  	res.status(200).json(supervisors);
 	  	}else{
 	  		res.status(404).json({error: 'Supervisors not found'});
 	  	}
@@ -113,7 +113,7 @@ router.post('/', function(req, res, next){
 			req.models.supervisor.create(newUser, function(err, createdItem){
 				if(err) return next(err);
 				res.status(201)
-					.json({createdItem: createdItem});
+					.json(createdItem);
 			});
 		}
 	});

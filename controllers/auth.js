@@ -50,10 +50,10 @@ router.post('/login', function(req, res, next){
 
 				res.status(201).json({token: token});	
 			}else{
-				res.status(403).json({error:true, message: 'Wrong password'});
+				res.status(200).json({error:true, message: 'Wrong password'});
 			}
 		}else{
-			res.status(403).json({error:true, message: 'Supervisor doesnt exists'});
+			res.status(200).json({error:true, message: 'Supervisor doesnt exists'});
 		}	
 	})
 });

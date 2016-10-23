@@ -6,13 +6,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var orm = require('orm');
 var auth_middle = require('./middleware/auth');
-//var cors = require('cors');
+var cors = require('cors');
 
 //Controllers
 var authController = require('./controllers/auth');
 var supervisorController = require('./controllers/supervisor');
 var employeeController = require('./controllers/employee');
 var invoiceController = require('./controllers/invoice');
+var contractController = require('./controllers/contract');
 
 var app = express();
 
@@ -25,7 +26,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(cors);
+app.use(cors());
 
 //Routes
 app.use('/auth', authController);
@@ -35,6 +36,7 @@ app.use('/supervisors', supervisorController);
 //app.use(auth_middle);
 app.use('/employees', employeeController);
 app.use('/invoices', invoiceController);
+app.use('/contract', contractController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

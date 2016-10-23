@@ -113,6 +113,7 @@ module.exports.define = function(db){
 
 	//One to many relationship between contract and status
 	db.models.contract.hasOne('status', db.models.status);
+	db.models.contract.hasOne('supervisor', db.models.supervisor);
 
 	//Tract's model
 	db.define('tract', {

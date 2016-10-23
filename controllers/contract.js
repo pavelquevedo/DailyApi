@@ -14,3 +14,39 @@ router.use(orm.express(database.connectionString, {
     models.contract = db.models.contract;
   }
 }));
+
+/*POST a single contract*/
+router.post('/', (req, res, next) => {
+	console.log('POST: lodgment invoice', req.body);
+	if(general.isEmptyObject(req.body)){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.contract.create(req.body, (err, createdItem) => {
+			if(err){
+				res.status(204).json({error: err});
+			}else{
+				res.status(201)
+		          .json({createdItem: createdItem});
+			}
+		});
+	}
+});
+
+/*GET: Single contract*/
+router.get('/:id', (req,res,next) => {
+	console.log('GET: contract by ID', req.body);
+	if(!req.params.id){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.contract.get(req.params.id, function(err, contract){
+			if(contract){
+				res.status(200).json({contract: contract});
+			}else{
+				res.status(403).json({error: true, message: 'Contract not found'});
+			}
+		});	
+	}
+	
+});
+
+module.exports = router;
