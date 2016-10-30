@@ -1,12 +1,22 @@
 var orm = require('orm');
 
-var opts = {
+/*var opts = {
   database: "heroku_3aa861ea011580e",
   protocol: "mysql",
   host: "us-cdbr-iron-east-04.cleardb.net",
   user: "b2dc16b66b1056",
   password: "38493abc"
+}*/
+
+var opts = {
+  database: "daily_app",
+  protocol: "mysql",
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: ""
 }
+
 
 module.exports.connectionString = opts;
 

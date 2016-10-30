@@ -4,6 +4,7 @@ var orm = require('orm');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var config = require('../config/config');
+var general = require('../config/general');
 
 var crypto = require('crypto'),
 	algorithm = 'aes-256-ctr',
@@ -18,7 +19,7 @@ function encrypt(text){
 }
 
 function decrypt(text){
-	var decipher = crypto.createDecipher(algorithm, password);
+	var decipher = crypto.createDecipher('aes-256-ctr', 'D41LY');
 	var dec = decipher.update(text, 'hex', 'utf8');
 	dec += deipher.final('utf8');
 	return dec;
@@ -44,6 +45,21 @@ router.get('/', function(req, res, next) {
   	});
 });
 
+router.get('/supervisorByEmail/:email', function(req,res,next){
+	console.log('GET: supervisor by email', req.body);
+	if(!req.params.email){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}
+
+	req.models.supervisor.find({email: req.params.email}, function(err, supervisors){
+		if(supervisors){
+			res.status(200).json(supervisors[0]);
+		}else{
+			res.status(200).json({error: true, message: 'Supervisor not found'});
+		}
+	});
+});
+
 /*GET: Single supervisor*/
 router.get('/:id', function(req,res,next){
 	console.log('GET: supervisor by ID', req.body);
@@ -65,27 +81,27 @@ router.get('/:id', function(req,res,next){
 router.get('/getEmployees/:id', function(req,res,next){
 	console.log('GET: supervisors employees by ID', req.params.id);
 	if(!req.params.id){
-		res.status(403).json({error: true, message: 'Petition empty'});
+		res.status(200).json({error: true, message: 'Petition empty'});
 	}
 
 	req.models.supervisor.get(req.params.id, function(err, supervisor){
 	    if(err){
-	    	res.status(403).json({error: true, message: err});
+	    	res.status(200).json({error: true, message: err});
 	    }else{
 	    	if(supervisor){
 		    	supervisor.getEmployees(function(err, employees){
 		      		if(err){
-		      			res.status(403).json({error: true, message: err});
+		      			res.status(200).json({error: true, message: err});
 		      		}else{
 		      			if(employees){
-			      			res.status(200).json({employees: employees});
+			      			res.status(200).json(employees);
 			      		}else{
-			      			res.status(403).json({error: true, message: 'Employees not found'});
+			      			res.status(200).json({error: true, message: 'Employees not found'});
 			      		}
 		      		}
 		    	});
 		    }else{
-		    	res.status(403).json({error: true, message: 'Supervisor not found'});
+		    	res.status(200).json({error: true, message: 'Supervisor not found'});
 		    }
 	    }
 	});
@@ -119,6 +135,41 @@ router.post('/', function(req, res, next){
 	});
 
 
+});
+
+/*PUT: A single supervisor*/
+router.put('/', function(req, res, next){
+	console.log('PUT: supervisor', req.body);
+	if(general.isEmptyObject(req.body)){
+    	res.status(403).json({error: true, message: 'Petition empty'});
+	}
+	var updatedSupervisor = {
+		id: req.body.id,
+		name: req.body.name,
+		pass: encrypt(req.body.pass),
+		active: req.body.active,
+		email: req.body.email,
+		cod_vehiculo: req.body.cod_vehiculo
+	}
+
+	req.models.supervisor.get(updatedSupervisor.id, function(err, supervisor){
+		if(supervisor){
+			supervisor.name = updatedSupervisor.name;
+			supervisor.pass = updatedSupervisor.pass;
+			supervisor.active = updatedSupervisor.active;
+			supervisor.email = updatedSupervisor.email;
+			supervisor.cod_vehiculo = updatedSupervisor.cod_vehiculo;
+			supervisor.save(function(err){
+				if(err){
+					res.status(200).json({error: true, message: err});
+				}else{
+					res.status(200).json(supervisor);			
+				}
+			});
+		}else{
+			res.status(200).json({error: true, message: 'Supervisor not found'});
+		}
+	});
 });
 
 /*DELETE: A single supervisor*/

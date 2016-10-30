@@ -21,7 +21,7 @@ function encrypt(text){
 function decrypt(text){
 	var decipher = crypto.createDecipher(algorithm, password);
 	var dec = decipher.update(text, 'hex', 'utf8');
-	dec += deipher.final('utf8');
+	dec += decipher.final('utf8');
 	return dec;
 }
 
@@ -32,6 +32,38 @@ router.use(orm.express(database.connectionString, {
     models.supervisor = db.models.supervisor;
   }
 }));
+
+router.get('/encrypt/:pass',function(req,res,next){
+	if(!req.params.pass){
+		res.status(200).json({error:true, message: 'Petition empty'});
+	}
+	var pass = req.params.pass;
+	var encoded = encrypt(pass);
+	res.status(200).json({pass: encoded});
+});
+
+router.get('/decrypt/:pass', function(req,res,next){
+	if(!req.params.pass){
+		res.status(200).json({error:true, message: 'Petition empty'});
+	}
+
+	var pass = req.params.pass;
+	var decoded = decrypt(pass);
+	console.log(decoded);
+
+	res.status(200).json({pass: decoded});
+});
+
+router.get('/isValidToken', function(req, res, next){
+	jwt.verify(req.headers['x-access-token'], config.secret, function(err, decoded){
+		if(err){
+			res.status(200).json({error:true, message:'Invalid token'});
+		}
+		if(decoded){
+			res.status(200).json(decoded);
+		}
+	});
+});
 
 /*GET: Supervisor login*/
 router.post('/login', function(req, res, next){

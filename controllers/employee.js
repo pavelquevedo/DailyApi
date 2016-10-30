@@ -60,4 +60,49 @@ router.post('/', function(req, res, next){
 
 });
 
+/*UPDATE a single employee*/
+router.put('/', function(req, res, next){
+  console.log('PUT: employee', req.body);
+  if(general.isEmptyObject(req.body)){
+    res.status(200).json({error: true, message: 'Petition empty'});
+  }
+
+  var id = req.body.id;
+  console.log("Id: ",id);
+
+  req.models.employee.get(id, function(err, employee){
+    if(employee){
+      employee.supervisor_id = req.body.supervisor_id;
+      employee.save(function(err){
+        if(err){
+          res.status(204).json({error: true, message: err});
+        }else{
+          res.status(200)
+            .json({employee: employee});
+        }
+      })
+    }else{
+      res.status(404).json({error: true, message: 'Employee not found'});
+    }
+  });
+
+  /*req.models.employee.get(req.body.id, function(err, employee){
+    console.log('entro'+ employee.supervisor_id);
+    if(err){
+      console.log
+      res.status(200).json({error: true, message: err});
+    }else{
+      employee.supervisor_id = req.body.supervisor_id;
+      employee.save(function(err){
+        if(err){
+          res.status(200).json({error: true, message: err});    
+        }else{
+          res.status(204);
+        }
+      });
+    }
+  });*/
+
+});
+
 module.exports = router;
