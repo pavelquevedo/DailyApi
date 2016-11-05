@@ -25,18 +25,18 @@ module.exports.define = function(db){
 	//Supervisor's model
 	db.define('supervisor', {
 		id: {type: 'serial', key: true},
-		name : {type: 'text', size: 50},
-		pass: {type: 'text', size: 128},
-		active: {type: 'boolean'},
-		email: {type: 'text', size: 50},
+		name : {type: 'text', size: 50, required: true},
+		pass: {type: 'text', size: 128, required: true},
+		active: {type: 'boolean', required: true},
+		email: {type: 'text', size: 50, required: true},
 		cod_vehiculo: {type: 'text', size: 25}
 	});
 
 	//Employee's model
 	db.define('employee', {
 		id: {type: 'serial', key: true},
-		name : {type: 'text', size: 50},
-		active: {type: 'boolean'}
+		name : {type: 'text', size: 50, required: true},
+		active: {type: 'boolean', required: true}
 	});
 
 	//One to one relationship between supervisor and employee
@@ -45,20 +45,20 @@ module.exports.define = function(db){
 	//State's model
 	db.define('state', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 25}
+		name: {type: 'text', size: 25, required: true}
 	});
 
 	//County's model
 	db.define('county', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 25}
+		name: {type: 'text', size: 25, required: true}
 	});
 
 	//Invoice's model
 	db.define('invoice', {
 		id: {type: 'serial', key: true},
-		image_url: {type: 'text', size: 255},
-		total: {type: 'number'}
+		image_url: {type: 'text', size: 255, required: true},
+		total: {type: 'number', required: true}
 	});
 
 	//One to one relationships between invoice, state and county
@@ -68,8 +68,8 @@ module.exports.define = function(db){
 	//Gas invoice's model
 	db.define('gas_invoice', {
 		id: {type: 'serial', key: true},
-		miles: {type: 'number'},
-		galon_price: {type: 'number'}
+		miles: {type: 'number', required: true},
+		galon_price: {type: 'number', required: true}
 	});
 
 	//One to one relationship between invoice and gas invoice
@@ -78,8 +78,8 @@ module.exports.define = function(db){
 	//Lodgement invoice's model
 	db.define('lodgment_invoice', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 50},
-		rate_per_night: {type: 'number'}
+		name: {type: 'text', size: 50, required: true},
+		rate_per_night: {type: 'number', required: true}
 	});
 
 	//One to one relationship between invoice and lodgement invoice

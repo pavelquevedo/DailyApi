@@ -5,6 +5,7 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var config = require('../config/config');
 var general = require('../config/general');
+var _ = require('lodash');
 
 var crypto = require('crypto'),
 	algorithm = 'aes-256-ctr',
@@ -38,6 +39,7 @@ router.get('/', function(req, res, next) {
   console.log('GET: supervisors list', req.body);
 	req.models.supervisor.find({}, function(err, supervisors){
 	  	if(supervisors){
+	  		supervisors = _.filter(supervisors, {active: true});
 		  	res.status(200).json(supervisors);
 	  	}else{
 	  		res.status(404).json({error: 'Supervisors not found'});
@@ -70,7 +72,7 @@ router.get('/:id', function(req,res,next){
 	}
 	req.models.supervisor.get(req.params.id, function(err, supervisor){
 		if(supervisor){
-			res.status(200).json({supervisor: supervisor});
+			res.status(200).json(supervisor);
 		}else{
 			res.status(403).json({error: true, message: 'Supervisor not found'});
 		}
@@ -94,6 +96,7 @@ router.get('/getEmployees/:id', function(req,res,next){
 		      			res.status(200).json({error: true, message: err});
 		      		}else{
 		      			if(employees){
+		      				employees = _.filter(employees, {active: true});
 			      			res.status(200).json(employees);
 			      		}else{
 			      			res.status(200).json({error: true, message: 'Employees not found'});

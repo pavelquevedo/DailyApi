@@ -3,6 +3,7 @@ var express = require('express');
 var orm = require('orm');
 var router = express.Router();
 var general = require('../config/general');
+var _ = require('lodash');
 
 
 /*Connection and set the employee's model to the request*/
@@ -18,7 +19,9 @@ router.get('/', function(req, res, next) {
   console.log('GET: employees', req.body);
   req.models.employee.find({}, function(err, employees){
     if(employees){
-      res.status(200).json({employees: employees});
+      employees = _.filter(employees, {'active': true});
+      console.log(employees);
+      res.status(200).json(employees);
     }else{
       res.status(404).json({error: 'Employees not found'});
     }
@@ -36,7 +39,7 @@ router.get('/:id', function(req, res, next){
 	req.models.employee.get(req.params.id, function(err, employee){
 		if(employee){
       res.status(200)
-      .json({employee: employee});
+      .json(employee);
     }else{
       res.status(404).json({error: true, message: 'Employee not found'});
     }
@@ -78,7 +81,7 @@ router.put('/', function(req, res, next){
           res.status(204).json({error: true, message: err});
         }else{
           res.status(200)
-            .json({employee: employee});
+            .json(employee);
         }
       })
     }else{
@@ -102,6 +105,32 @@ router.put('/', function(req, res, next){
       });
     }
   });*/
+
+});
+
+
+  /*UPDATE a single employee*/
+router.delete('/:id', function(req, res, next){
+  console.log('DELETE: employee (change active status)', req.body);
+  if(!req.params.id){
+    res.status(200).json({error: true, message: 'Petition empty'});
+  }
+
+  req.models.employee.get(req.params.id, function(err, employee){
+    if(employee){
+      employee.active = false;
+      employee.save(function(err){
+        if(err){
+          res.status(204).json({error: true, message: err});
+        }else{
+          res.status(200)
+            .json(employee);
+        }
+      })
+    }else{
+      res.status(404).json({error: true, message: 'Employee not found'});
+    }
+  });
 
 });
 

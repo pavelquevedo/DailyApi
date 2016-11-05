@@ -31,10 +31,11 @@ app.use(cors());
 //Routes
 app.use('/auth', authController);
 app.use('/supervisors', supervisorController);
-
-//Protected routes
-//app.use(auth_middle);
 app.use('/employees', employeeController);
+//Protected routes
+app.use(auth_middle);
+
+
 app.use('/invoices', invoiceController);
 app.use('/contract', contractController);
 
