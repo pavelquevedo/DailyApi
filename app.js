@@ -14,6 +14,7 @@ var supervisorController = require('./controllers/supervisor');
 var employeeController = require('./controllers/employee');
 var invoiceController = require('./controllers/invoice');
 var contractController = require('./controllers/contract');
+var stateController = require('./controllers/state');
 
 var app = express();
 
@@ -33,11 +34,12 @@ app.use('/auth', authController);
 app.use('/supervisors', supervisorController);
 app.use('/employees', employeeController);
 //Protected routes
-app.use(auth_middle);
+//app.use(auth_middle);
 
 
 app.use('/invoices', invoiceController);
 app.use('/contract', contractController);
+app.use('/states', stateController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

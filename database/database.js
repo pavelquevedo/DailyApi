@@ -53,6 +53,8 @@ module.exports.define = function(db){
 		id: {type: 'serial', key: true},
 		name: {type: 'text', size: 25, required: true}
 	});
+	//One to one relationship between county and state
+	db.models.county.hasOne('state', db.models.state, {reverse: 'counties'});
 
 	//Invoice's model
 	db.define('invoice', {

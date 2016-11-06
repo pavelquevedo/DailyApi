@@ -29,7 +29,7 @@ router.post('/', (req, res, next) => {
 	      		res.status(204).json({error: err});
 		    }
 		      res.status(201)
-		          .json({createdItem: createdItem});
+		          .json(createdItem);
 		});
 	}
 });
@@ -45,7 +45,7 @@ router.post('/gas', (req, res, next) => {
 				res.status(204).json({error: err});
 			}else{
 				res.status(201)
-		          .json({createdItem: createdItem});
+		          .json(createdItem);
 			}
 		});
 	}
@@ -62,7 +62,7 @@ router.post('/lodgment', (req, res, next) => {
 				res.status(204).json({error: err});
 			}else{
 				res.status(201)
-		          .json({createdItem: createdItem});
+		          .json(createdItem);
 			}
 		});
 	}
@@ -79,7 +79,7 @@ router.post('/other', (req, res, next) => {
 				res.status(204).json({error: err});
 			}else{
 				res.status(201)
-		          .json({createdItem: createdItem});
+		          .json(createdItem);
 			}
 		});
 	}
