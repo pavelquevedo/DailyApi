@@ -112,9 +112,9 @@ module.exports.define = function(db){
 	//Contract's model
 	db.define('contract', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 50},
-		company_name: {type: 'text', size: 50},
-		number: {type: 'text', size: 20},
+		company_name: {type: 'text', size: 50, required: true},
+		contact_name: {type: 'text', size: 50, required: true},
+		contact_number: {type: 'text', size: 20, required: true},
 		tracts: {type: 'integer'},
 		trees: {type: 'integer'},
 		acres: {type: 'number'},
@@ -124,7 +124,7 @@ module.exports.define = function(db){
 
 	//One to many relationship between contract and status
 	db.models.contract.hasOne('status', db.models.status);
-	db.models.contract.hasOne('supervisor', db.models.supervisor);
+	db.models.contract.hasOne('supervisor', db.models.supervisor, {reverse: 'contracts'});
 
 	//Tract's model
 	db.define('tract', {

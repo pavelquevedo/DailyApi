@@ -1,0 +1,17 @@
+INSERT INTO tree_type(name) values('Longleaf Pine');
+INSERT INTO tree_type(name) values('Slash Pine');
+INSERT INTO tree_type(name) values('Loblolly Pine');
+INSERT INTO tree_type(name) values('Sand Pine');
+INSERT INTO tree_type(name) values('Shortleaf Pine');
+INSERT INTO tree_type(name) values('Eucalyptus');
+INSERT INTO tree_type(name) values('Cypress');
+INSERT INTO tree_type(name) values('Bald Cypress');
+INSERT INTO tree_type(name) values('Sweetgum');
+INSERT INTO tree_type(name) values('Cedar');
+INSERT INTO tree_type(name) values('Sawtooth Oak');
+INSERT INTO tree_type(name) values('Live Oak');
+INSERT INTO tree_type(name) values('Turkey Oak');
+INSERT INTO tree_type(name) values('Indian Grass');
+INSERT INTO tree_type(name) values('Sawgrass');
+INSERT INTO tree_type(name) values('Toothache Grass');
+INSERT INTO tree_type(name) values('Wiregrass');
