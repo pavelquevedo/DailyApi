@@ -13,6 +13,7 @@ router.use(orm.express(database.connectionString, {
     //Load models to response
     models.tract = db.models.tract;
     models.tree_type = db.models.tree_type;
+    models.root_type = db.models.root_type;
   }
 }));
 
@@ -22,7 +23,12 @@ router.post('/', (req, res, next) => {
 	if(general.isEmptyObject(req.body)){
 		res.status(403).json({error: true, message: 'Petition empty'});
 	}else{
-		req.models.contract.create(req.body, (err, createdItem) => {
+		console.log("Fecha ",req.body.start_date);
+		//Parse date
+		//var fecha = Date.parse(req.body.start_date);
+		req.body.start_date = new Date(req.body.start_date);
+		//Create tract
+		req.models.tract.create(req.body, (err, createdItem) => {
 			if(err){
 				res.status(204).json({error: err});
 			}else{
@@ -40,7 +46,7 @@ router.get('/tree_types', (req, res, next) => {
     if(trees){
       res.status(200).json(trees);
     }else{
-      res.status(404).json({error: 'Employees not found'});
+      res.status(404).json({error: 'Tree types not found'});
     }
   });
 });
@@ -60,6 +66,18 @@ router.post('/tree_types', (req, res, next) => {
 			}
 		});
 	}
+});
+
+/* GET tree types listing. */
+router.get('/root_types', (req, res, next) => {
+  console.log('GET: root types', req.body);
+  req.models.root_type.find({}, function(err, roots){
+    if(roots){
+      res.status(200).json(roots);
+    }else{
+      res.status(404).json({error: 'Root types not found'});
+    }
+  });
 });
 
 module.exports = router;

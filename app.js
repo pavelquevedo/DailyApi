@@ -34,10 +34,10 @@ app.use(cors());
 app.use('/auth', authController);
 app.use('/supervisors', supervisorController);
 app.use('/employees', employeeController);
+app.use('/contracts', contractController);
 //Protected routes
 //app.use(auth_middle);
 app.use('/invoices', invoiceController);
-app.use('/contracts', contractController);
 app.use('/states', stateController);
 app.use('/tracts', tractController);
 

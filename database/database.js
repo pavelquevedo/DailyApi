@@ -100,13 +100,18 @@ module.exports.define = function(db){
 	//Status' model
 	db.define('status', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 25}
+		name: {type: 'text', size: 25, required: true}
 	});
 
 	//Tree type model
 	db.define('tree_type', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 25}
+		name: {type: 'text', size: 25, required: true}
+	});
+
+	db.define('root_type', {
+		id: {type: 'serial', key: true},
+		name: {type: 'text', size: 30, required: true}
 	});
 
 	//Contract's model
@@ -115,9 +120,9 @@ module.exports.define = function(db){
 		company_name: {type: 'text', size: 50, required: true},
 		contact_name: {type: 'text', size: 50, required: true},
 		contact_number: {type: 'text', size: 20, required: true},
-		tracts: {type: 'integer'},
-		trees: {type: 'integer'},
-		acres: {type: 'number'},
+		tracts: {type: 'integer', required:true},
+		trees: {type: 'integer', required:true},
+		acres: {type: 'number', required:true},
 		start_date: {type: 'date', time: true},
 		finish_date: {type: 'date', time: true}
 	});
@@ -129,10 +134,11 @@ module.exports.define = function(db){
 	//Tract's model
 	db.define('tract', {
 		id: {type: 'serial', key: true},
-		name: {type: 'text', size: 50},
+		name: {type: 'text', size: 50, required: true},
 		rl: {type: 'number'},
 		rw: {type: 'number'},
 		acres: {type: 'number'},
+		trees_per_box: {type: 'number'},
 		start_date: {type: 'date', time: true},
 		finish_date: {type: 'date', time: true}
 	});
@@ -142,6 +148,7 @@ module.exports.define = function(db){
 	db.models.tract.hasOne('state', db.models.state);
 	db.models.tract.hasOne('county', db.models.county);
 	db.models.tract.hasOne('tree_type', db.models.tree_type);
+	db.models.tract.hasOne('root_type', db.models.root_type);
 	db.models.tract.hasOne('status', db.models.status);
 
 	//Daily type's model
@@ -158,9 +165,12 @@ module.exports.define = function(db){
 	});
 
 	//One to many relationshps
-	db.models.daily.hasOne('tract', db.models.tract, {reverse: 'dailies'});
+	db.models.daily.hasMany("tracts", db.models.tract, {}, {key: true, reverse: "dailies"});
+	db.models.daily.hasMany('employee', db.models.employee, {datetime: Date, trees: Number }, {reverse: 'dailies', key:true});
 	db.models.daily.hasOne('daily_type', db.models.daily_type);
 	db.models.daily.hasOne('status', db.models.status);
+
+
 
 }
 
