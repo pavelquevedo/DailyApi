@@ -1,11 +1,11 @@
 "use strict";
 
-var database = require('../database/database');
-var express = require('express');
-var orm = require('orm');
-var router = express.Router();
-var general = require('../config/general');
-var _ = require('lodash');
+const database = require('../database/database');
+const express = require('express');
+const orm = require('orm');
+const router = express.Router();
+const general = require('../config/general');
+const _ = require('lodash');
 
 
 
@@ -16,6 +16,27 @@ router.use(orm.express(database.connectionString, {
     models.contract = db.models.contract;
   }
 }));
+
+/*POST: single/list contract*/
+router.post('/', (req, res, next) => {
+console.log('POST: contract', req.body);
+if(general.isEmptyObject(req.body)){
+	res.status(403).json({error: true, message: 'Petition empty'});
+}else{
+	let contract = req.body;
+	//Set dates
+	contract.start_date = new Date(contract.start_date);
+	contract.finish_date = new Date(contract.finish_date);
+	req.models.contract.create(contract, (err, createdItem) => {
+		if(err){
+			res.status(204).json({error: err});
+		}else{
+			res.status(201)
+	          .json(createdItem);
+		}
+	});
+}
+});
 
 /* GET: supervisors listing. */
 router.get('/', (req, res, next) => {
@@ -49,20 +70,6 @@ router.get('/getTracts/:contract_id', (req, res, next) => {
   	});
 });
 
-router.post('/', (req, res, next) => {
-	console.log('POST: contract', req.body);
-	if(general.isEmptyObject(req.body)){
-		res.status(403).json({error: true, message: 'Petition empty'});
-	}else{
-		req.models.contract.create(req.body, (err, createdItem) => {
-			if(err){
-				res.status(204).json({error: err});
-			}else{
-				res.status(201)
-		          .json(createdItem);
-			}
-		});
-	}
-});
+
 
 module.exports = router;

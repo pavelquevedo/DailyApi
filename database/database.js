@@ -1,21 +1,21 @@
 var orm = require('orm');
 
-var opts = {
+/*var opts = {
   database: "heroku_b13698b200b033f",
   protocol: "mysql",
   host: "us-cdbr-iron-east-04.cleardb.net",
   user: "b973774dc9ba03",
   password: "25680754"
-}
+}*/
 
-/*var opts = {
+var opts = {
   database: "daily_app",
   protocol: "mysql",
   host: "localhost",
   port: 3306,
   user: "root",
   password: ""
-}*/
+}
 
 
 module.exports.connectionString = opts;
@@ -120,9 +120,8 @@ module.exports.define = function(db){
 		company_name: {type: 'text', size: 50, required: true},
 		contact_name: {type: 'text', size: 50, required: true},
 		contact_number: {type: 'text', size: 20, required: true},
-		tracts: {type: 'integer', required:true},
-		trees: {type: 'integer', required:true},
-		acres: {type: 'number', required:true},
+		trees: {type: 'integer'},
+		acres: {type: 'number'},
 		start_date: {type: 'date', time: true},
 		finish_date: {type: 'date', time: true}
 	});
@@ -150,6 +149,7 @@ module.exports.define = function(db){
 	db.models.tract.hasOne('tree_type', db.models.tree_type);
 	db.models.tract.hasOne('root_type', db.models.root_type);
 	db.models.tract.hasOne('status', db.models.status);
+	db.models.tract.hasMany('employee', db.models.employee, {reverse: 'employees', key:true});
 
 	//Daily type's model
 	db.define('daily_type', {
@@ -166,7 +166,7 @@ module.exports.define = function(db){
 
 	//One to many relationshps
 	db.models.daily.hasMany("tracts", db.models.tract, {}, {key: true, reverse: "dailies"});
-	db.models.daily.hasMany('employee', db.models.employee, {datetime: Date, trees: Number }, {reverse: 'dailies', key:true});
+	
 	db.models.daily.hasOne('daily_type', db.models.daily_type);
 	db.models.daily.hasOne('status', db.models.status);
 
