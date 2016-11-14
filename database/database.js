@@ -9,7 +9,7 @@ var orm = require('orm');
 }*/
 
 var opts = {
-  database: "daily_app",
+  database: "daily_api",
   protocol: "mysql",
   host: "localhost",
   port: 3306,
@@ -21,6 +21,9 @@ var opts = {
 module.exports.connectionString = opts;
 
 module.exports.define = function(db){
+
+
+
 
 	//Supervisor's model
 	db.define('supervisor', {
@@ -149,7 +152,7 @@ module.exports.define = function(db){
 	db.models.tract.hasOne('tree_type', db.models.tree_type);
 	db.models.tract.hasOne('root_type', db.models.root_type);
 	db.models.tract.hasOne('status', db.models.status);
-	db.models.tract.hasMany('employee', db.models.employee, {reverse: 'employees', key:true});
+	db.models.tract.hasMany('employee', db.models.employee, {status_tract_employee: {type:'integer'}}, {key:true, reverse:'tracts'});
 
 	//Daily type's model
 	db.define('daily_type', {
@@ -162,16 +165,24 @@ module.exports.define = function(db){
 		id: {type: 'serial', key: true},
 		start_date: {type: 'date', time: true},
 		finish_date: {type: 'date', time: true},
+		boxes: {type: 'integer'}
 	});
 
 	//One to many relationshps
-	db.models.daily.hasMany("tracts", db.models.tract, {}, {key: true, reverse: "dailies"});
-	
+	db.models.daily.hasMany("tract", db.models.tract, {status_daily_tract:{type:'integer'}}, {key: true});
+	db.models.daily.hasMany("employee", db.models.employee, {status_daily_employee:{type:'integer'}}, {key:true});
 	db.models.daily.hasOne('daily_type', db.models.daily_type);
-	db.models.daily.hasOne('status', db.models.status);
+	db.models.daily.hasOne('status_daily', db.models.status);
 
+	db.define('daily_detail', {
+		id: {type: 'serial', key: true},
+		insert_date: {type: 'date', time: true},
+		trees: {type: 'integer'}
+	});
 
-
+	db.models.daily_detail.hasOne("daily", db.models.daily);
+	db.models.daily_detail.hasOne("tract", db.models.tract);
+	db.models.daily_detail.hasOne("employee", db.models.employee);
 }
 
 	

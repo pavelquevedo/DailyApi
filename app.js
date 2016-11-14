@@ -16,6 +16,7 @@ var invoiceController = require('./controllers/invoice');
 var contractController = require('./controllers/contract');
 var stateController = require('./controllers/state');
 var tractController = require('./controllers/tract');
+var dailyController = require('./controllers/daily');
 
 var app = express();
 
@@ -40,6 +41,7 @@ app.use('/contracts', contractController);
 app.use('/invoices', invoiceController);
 app.use('/states', stateController);
 app.use('/tracts', tractController);
+app.use('/daily', dailyController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
