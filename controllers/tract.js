@@ -15,8 +15,20 @@ router.use(orm.express(database.connectionString, {
     models.tract = db.models.tract;
     models.tree_type = db.models.tree_type;
     models.root_type = db.models.root_type;
+    models.driver = db.driver;
   }
 }));
+
+router.delete('/tract_employee', (req, res, next) => {
+	console.log('DELETE DETAIL tract_employee');
+	req.models.driver.execQuery('DELETE FROM tract_employee', (err, data) => {
+		if(err){
+			res.status(204).json({err: err});
+		}else{
+			res.status(200).json({success:true});
+		}
+	});
+});
 
 /*POST a single contract*/
 router.post('/', (req, res, next) => {

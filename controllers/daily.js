@@ -33,6 +33,55 @@ router.get('/detail/:daily_id/:employee_id/:tract_id', (req, res, next) =>{
 	}
 });
 
+/*PUT: daily_detail*/
+router.put('/detail/', (req, res, next) =>{
+	console.log('PUT: daily_detail', req.body);
+	if(general.isEmptyObject(req.body)){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		let id = req.body.id;
+		//Create daily detail
+		req.models.daily_detail.get(id, (err, dailyDetail) => {
+			if(err){
+				res.status(204).json({error: err});
+			}else{
+				dailyDetail.trees = req.body.trees;
+				dailyDetail.save((err) => {
+					if(err){
+						res.status(204).json({error: err});
+					}else{
+						res.status(201)
+		          			.json(dailyDetail);		
+					}
+				});				
+			}
+		});
+	}
+});
+
+/*DELETE: daily_detail*/
+router.delete('/detail/:id', (req, res, next) => {
+	console.log('DELETE: daily_detail', req.body);
+	if(!req.params.id){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.daily_detail.get(req.params.id, (err, dailyDetail) => {
+			if(err){
+				res.status(204).json({error: err});
+			}else{
+				dailyDetail.remove((err) => {
+					if(err){
+						res.status(204).json({error: err});
+					}else{
+						res.status(200)
+		          			.json(dailyDetail);		
+					}
+				});				
+			}
+		});
+	}
+});
+
 /*POST: daily_detail*/
 router.post('/detail', (req, res, next) => {
 	console.log('POST: daily_detail', req.body);
@@ -69,6 +118,7 @@ router.get('/employees/:id', (req, res, next) => {
 					if(err){
 						res.status(204).json({error: err});
 					}else{
+						employees = _.filter(employees, {status_daily_employee:3});
 						res.status(200).json(employees);
 					}
 				});
