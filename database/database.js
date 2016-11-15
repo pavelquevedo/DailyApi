@@ -1,23 +1,23 @@
 var orm = require('orm');
 
-/*var opts = {
-  database: "heroku_b13698b200b033f",
+var opts = {
+  database: "heroku_49f421edbcae012",
   protocol: "mysql",
   host: "us-cdbr-iron-east-04.cleardb.net",
-  user: "b973774dc9ba03",
-  password: "25680754"
-}*/
+  user: "b7b66ecd44c736",
+  password: "7fcc430d"
+}
 
-var localOpts = {
+/*var localOpts = {
   database: "daily_api",
   protocol: "mysql",
   host: "localhost",
   port: 3306,
   user: "root",
   password: ""
-}
+}*/
 
-var opts = process.env.CLEARDB_DATABASE_URL || localOpts;
+//var opts = process.env.CLEARDB_DATABASE_URL || localOpts;
 
 module.exports.connectionString = opts;
 
