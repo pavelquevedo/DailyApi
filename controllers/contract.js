@@ -25,8 +25,8 @@ if(general.isEmptyObject(req.body)){
 }else{
 	let contract = req.body;
 	//Set dates
-	contract.start_date = new Date(contract.start_date);
-	contract.finish_date = new Date(contract.finish_date);
+	/*contract.start_date = new Date(contract.start_date);
+	contract.finish_date = new Date(contract.finish_date);*/
 	req.models.contract.create(contract, (err, createdItem) => {
 		if(err){
 			res.status(204).json({error: err});
