@@ -8,7 +8,7 @@ var orm = require('orm');
   password: "25680754"
 }*/
 
-var opts = {
+var localOpts = {
   database: "daily_api",
   protocol: "mysql",
   host: "localhost",
@@ -17,6 +17,7 @@ var opts = {
   password: ""
 }
 
+var opts = process.env.CLEARDB_DATABASE_URL || localOpts;
 
 module.exports.connectionString = opts;
 
