@@ -196,8 +196,12 @@ module.exports.connect = function(cb){
 	orm.connect(module.exports.connectionString, function(err, db){
 		if(err) return cb(err);
 
+		db.settings.set('instance.cache', 500);
+		db.settings.set("instance.autoFetch", true);
+		db.settings.set("instance.returnAllErrors", true);
+
 		connection = db;
-		
+
 		module.exports.define(db);
 
 		cb(null,db);
