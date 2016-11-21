@@ -1,11 +1,13 @@
 var orm = require('orm');
+var connection = null;
 
 var opts = {
   database: "heroku_49f421edbcae012",
   protocol: "mysql",
   host: "us-cdbr-iron-east-04.cleardb.net",
   user: "b7b66ecd44c736",
-  password: "7fcc430d"
+  password: "7fcc430d",
+  query    : { pool: true },
 }
 
 /*var localOpts = {
@@ -189,9 +191,13 @@ module.exports.define = function(db){
 	
 
 module.exports.connect = function(cb){
+	if (connection) return cb(null, connection);
+
 	orm.connect(module.exports.connectionString, function(err, db){
 		if(err) return cb(err);
 
+		connection = db;
+		
 		module.exports.define(db);
 
 		cb(null,db);
