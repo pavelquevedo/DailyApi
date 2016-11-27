@@ -9,7 +9,7 @@ var opts = {
   password: "allyouneediscode",
   query    : { pool: true },
   acquireTimeout: 1000000,
-  
+  sslca: "config/rds-combined-ca-bundle.pem"
 }
 
 /*var localOpts = {
