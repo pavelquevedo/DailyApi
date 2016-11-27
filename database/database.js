@@ -8,6 +8,8 @@ var opts = {
   user: "root",
   password: "allyouneediscode",
   query    : { pool: true },
+  acquireTimeout: 1000000
+
 }
 
 /*var localOpts = {
