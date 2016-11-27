@@ -6,10 +6,7 @@ var opts = {
   protocol: "mysql",
   host: "allyouneediscode.c7npagn7amao.us-west-2.rds.amazonaws.com",
   user: "root",
-  password: "allyouneediscode",
-  query    : { pool: true },
-  acquireTimeout: 1000000
-
+  password: "allyouneediscode"
 }
 
 /*var localOpts = {
