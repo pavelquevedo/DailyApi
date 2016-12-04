@@ -12,7 +12,8 @@ router.use(orm.express(database.connectionString, {
   define: (db, models) => {
     database.define(db);
     models.daily = db.models.daily;
-	models.daily_detail = db.models.daily_detail;	
+	models.daily_detail = db.models.daily_detail;
+	models.driver = db.driver;	
   }
 }));
 
@@ -172,28 +173,59 @@ router.post('/', (req, res, next) => {
 	}
 });
 
-router.post('/employeeDetail/:daily_id/:employee_id/:status_id', (req, res, next) =>{
+router.post('/employeeDetail/:daily_id', (req, res, next) =>{
 	console.log('POST: daily_employee detail', req.body);
-	if(!req.params.employee_id || !req.params.daily_id || !req.params.status_id){
+	if(!req.params.daily_id || general.isEmptyObject(req.body)){
 		res.status(403).json({error:true, message: 'Petition empty'});
 	}else{
 		req.models.daily.get(req.params.daily_id, (err, daily) =>{
 			if(err){
 				res.status(204).json({error: err});
 			}else{
-				req.models.employee.get(req.params.employee_id, (err, employee) =>{
-					if (err){
-						res.status(204).json({error: err});
-					}else{
-						daily.addEmployee(employee, {status_daily_employee: req.params.status_id}, (err) => {
-							if(err){
-								res.status(204).json({error: err});		
-							}else{
+				//get employees
+				var employees = req.body;
+
+				var contador = 0;
+				var total = employees.length;
+
+				//Insert employee's detail
+				for (var i = 0; i < employees.length; i++) {
+					
+					var currentEmployee = employees[i];
+					
+					req.models.driver.execQuery('INSERT INTO daily_employee(employee_id, daily_id, status_daily_employee) VALUES('+currentEmployee.id+','+req.params.daily_id+','+currentEmployee.statusDailyEmployee+')', (err, data) => {
+						if(err){
+							res.status(204).json({err: err});
+						}else{
+							contador = contador + 1;
+							console.log(contador);
+							if (contador == total) {
 								res.status(201).json({success:true});
 							}
-						});	
-					}					
-				});				
+						}
+					});
+
+					/*console.log('status daily employee: ', currentEmployee.statusDailyEmployee);
+					//Get employee
+					req.models.employee.get(currentEmployee.id, (err, employee) =>{
+						//Print
+						
+						//status
+						var status_daily_employee = currentEmployee.statusDailyEmployee;
+						if (err){
+							res.status(204).json({error: err});
+						}else{
+							daily.addEmployee(employee, {status_daily_employee: currentEmployee.statusDailyEmployee}, (err) => {
+								
+								if(err){
+									res.status(204).json({error: err});		
+								}else{
+									currentEmployee = null;
+								}
+							});	
+						}					
+					});*/
+				}							
 			}
 		});
 	}
@@ -208,6 +240,8 @@ router.post('/tractDetail/:daily_id/:status_id', (req, res, next) =>{
 			if(err){
 				res.status(204).json({error: err});
 			}else{
+				var contador = 0;
+				var total = req.body.length;
 				//Add tract/daily details
 				for (let i = 0; i < req.body.length; i++) {
 					req.models.tract.get(req.body[i].id, (err, tract) =>{
@@ -217,12 +251,16 @@ router.post('/tractDetail/:daily_id/:status_id', (req, res, next) =>{
 							daily.addTract(tract, {status_daily_tract: req.params.status_id}, (err) => {
 								if (err) {
 									res.status(204).json({error: err});					
+								}else{
+									contador = contador + 1;
+									if (contador == total) {
+										res.status(201).json({success:true});
+									}
 								}
 							});		
 						}
 					});
 				}
-				res.status(201).json({success:true});
 			}
 		});
 	}
