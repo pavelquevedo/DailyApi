@@ -18,6 +18,32 @@ router.use(orm.express(database.connectionString, {
 }));
 
 /*GET: tract detail*/
+router.post('/finishDaily/:daily_id/:inactive_status', (req, res, next) =>{
+	console.log('GET: tract detail', req.body);
+	if (!req.params.daily_id || !req.params.inactive_status) {
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('UPDATE daily_employee SET status_daily_employee = '+req.params.inactive_status+
+									' WHERE daily_id = '+req.params.daily_id, (err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				req.models.driver.execQuery('UPDATE daily_tract SET status_daily_tract = '+req.params.inactive_status+
+											' WHERE daily_id = '+req.params.daily_id, (err, data) => {
+					if (err) {
+						res.status(204).json({err: err});	
+					}else{
+						res.status(201).json({success:true});
+					}
+				});
+			}
+		});
+
+	}
+});
+
+
+/*GET: tract detail*/
 router.get('/tractDetail/:daily_id/:active_status', (req, res, next) =>{
 	console.log('GET: tract detail', req.body);
 	if (!req.params.daily_id || !req.params.active_status) {
@@ -40,6 +66,49 @@ router.get('/tractDetail/:daily_id/:active_status', (req, res, next) =>{
 			}
 		});
 
+	}
+});
+
+/*GET: tract detail*/
+router.get('/tractDetail/:daily_id', (req, res, next) =>{
+	console.log('GET: tract detail', req.body);
+	if (!req.params.daily_id) {
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('SELECT t.*, s.name as state, c.name as county, tt.name as treeType, rt.name as rootType, SUM(dd.trees) as trees, SUM(dd.trees / t.trees_per_box) as boxes FROM tract t '+
+									'INNER JOIN daily_tract dt ON dt.tract_id = t.id '+
+									'INNER JOIN state s ON s.id = t.state_id '+
+									'INNER JOIN county c ON c.id = t.county_id '+
+									'INNER JOIN tree_type tt ON tt.id = t.tree_type_id '+
+									'INNER JOIN root_type rt ON rt.id = t.root_type_id '+
+									'INNER JOIN daily_detail dd ON dd.tract_id = t.id AND dd.daily_id = dt.daily_id '+
+									'WHERE dt.daily_id = '+req.params.daily_id+
+									' GROUP BY t.id, s.id, c.id', (err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				res.status(201).json(data);
+			}
+		});
+
+	}
+});
+
+/*GET: daily_detail sum trees*/
+router.get('/detail/:daily_id/:employee_id', (req, res, next) =>{
+	console.log('GET: daily_detail sum trees', req.body);
+	if (!req.params.daily_id || !req.params.employee_id) {
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('SELECT dd.*, t.name as tract_name, t.trees_per_box FROM daily_detail dd '+
+									'INNER JOIN tract t ON t.id = dd.tract_id '+
+									'WHERE dd.daily_id ='+req.params.daily_id+' AND dd.employee_id = '+req.params.employee_id, (err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				res.status(201).json(data);
+			}
+		});
 	}
 });
 
@@ -194,6 +263,30 @@ router.post('/', (req, res, next) => {
 			}else{
 				res.status(201)
 		          .json(createdItem);
+			}
+		});
+	}
+});
+
+/*PUT: single/list daily*/
+router.put('/', (req, res, next) => {
+	console.log('PUT: daily', req.body);
+	if(general.isEmptyObject(req.body)){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.daily.get(req.body.id, (err, daily) => {
+			if(err){
+				res.status(204).json({error: err});
+			}else{
+				daily.boxes = req.body.boxes;
+
+				daily.save((err) => {
+					if (err) {
+						res.status(204).json({error: err});		
+					}else{
+						res.status(201).json(daily);
+					}
+				});
 			}
 		});
 	}
