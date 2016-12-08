@@ -109,15 +109,14 @@ router.post('/employeeDetail', (req, res, next) =>{
 		//Insert employee's detail
 		for (var i = 0; i < employees.length; i++) {
 			//get employee id
-			var employeeId = employees[i].id;
-			//Get status id
-			var status_tract_employee = employees[i].statusDailyEmployee;
-			//get tract id
-			var tract_id = employees[i].tract_id;
+			var currentEmployee = employees[i];
 			//Exec query	
-			req.models.driver.execQuery('INSERT INTO tract_employee(tract_id, employee_id, status_tract_employee) VALUES('+tract_id+','+employeeId+','+status_tract_employee+')', (err, data) => {
+			req.models.driver.execQuery('INSERT INTO tract_employee(tract_id, employee_id, status_tract_employee) VALUES('+currentEmployee.tract_id+','+currentEmployee.id+','+currentEmployee.statusDailyEmployee+')', (err, data) => {
 				if(err){
-					res.status(204).json({err: err});
+					contador = contador + 1;
+					console.log(contador);
+					//res.status(200).json({err: err});
+					//throw err;
 				}else{
 					contador = contador + 1;
 					console.log(contador);

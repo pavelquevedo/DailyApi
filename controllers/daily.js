@@ -17,6 +17,34 @@ router.use(orm.express(database.connectionString, {
   }
 }));
 
+/*GET: Active supervisor's daily*/
+router.get('/activeDaily/:supervisor_id/:active_status/:in_progress_status', (req, res, next) =>{
+	console.log('GET: tract detail', req.body);
+	if (!req.params.supervisor_id || !req.params.active_status || !req.params.in_progress_status) {
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('SELECT d.* FROM contract c '+
+									'INNER JOIN supervisor s ON s.id = c.supervisor_id '+
+									'INNER JOIN tract t ON t.contract_id = c.id '+
+									'INNER JOIN daily_tract dt ON dt.tract_id = t.id '+
+									'INNER JOIN daily d ON d.id = dt.daily_id '+
+									'WHERE dt.status_daily_tract = '+req.params.active_status+
+									' AND c.status_id = '+req.params.in_progress_status+
+									' AND d.status_daily_id = '+req.params.in_progress_status+
+									' AND s.id = '+req.params.supervisor_id, (err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				if (data.length > 0) {
+					res.status(200).json(data[0]);	
+				}else{
+					res.status(200).json({message:'No data'});
+				}				
+			}
+		});
+	}
+});
+
 /*GET: tract detail*/
 router.post('/finishDaily/:daily_id/:inactive_status', (req, res, next) =>{
 	console.log('GET: tract detail', req.body);
@@ -33,7 +61,14 @@ router.post('/finishDaily/:daily_id/:inactive_status', (req, res, next) =>{
 					if (err) {
 						res.status(204).json({err: err});	
 					}else{
-						res.status(201).json({success:true});
+						req.models.driver.execQuery('UPDATE daily SET status_daily_id = '+req.params.inactive_status+
+											' WHERE id = '+req.params.daily_id, (err, data) => {
+							if (err) {
+								res.status(204).json({err: err});	
+							}else{
+								res.status(201).json({success:true});
+							}
+						});
 					}
 				});
 			}
