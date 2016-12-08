@@ -89,9 +89,9 @@ router.get('/inProgressContract/:supervisor_id/:in_progress_status', (req, res, 
 });
 
 /* GET: supervisors listing. */
-router.get('/getTracts/:contract_id', (req, res, next) => {
+router.get('/getTracts/:contract_id/:in_progress_status', (req, res, next) => {
   	console.log('GET: tract list by supervisor_id', req.body);
-  	if(!req.params.contract_id){
+  	if(!req.params.contract_id || !req.params.in_progress_status){
 		res.status(403).json({error: true, message: 'Petition empty'});
 	}
 	req.models.contract.get(req.params.contract_id, (err, contract) => {
@@ -100,6 +100,7 @@ router.get('/getTracts/:contract_id', (req, res, next) => {
 	  			if(err){
 	  				res.status(403).json(err);
 	  			}
+	  			tracts = _.filter(tracts, {status_id: parseInt(req.params.in_progress_status)});
 	  			res.status(200).json(tracts);
 	  		});		  	
 	  	}else{

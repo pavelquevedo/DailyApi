@@ -30,7 +30,7 @@ router.delete('/tract_employee', (req, res, next) => {
 	});
 });
 
-/*POST a single contract*/
+/*POST a single tract*/
 router.post('/', (req, res, next) => {
 	console.log('POST: tract', req.body);
 	if(general.isEmptyObject(req.body)){
@@ -47,6 +47,35 @@ router.post('/', (req, res, next) => {
 			}else{
 				res.status(201)
 		          .json(createdItem);
+			}
+		});
+	}
+});
+
+/*PUT a single tract*/
+router.put('/', (req, res, next) => {
+	console.log('PUT: tract', req.body);
+	if(general.isEmptyObject(req.body)){
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		//Get tract
+		req.models.tract.get(req.body.id, (err, tract) => {
+			if(err){
+				res.status(204).json({error: err});
+			}else{
+				//Update fields
+				tract.status_id = req.body.status_id;
+				tract.trees_per_box = req.body.trees_per_box;
+				tract.finish_date = new Date(req.body.finish_date);
+ 				//Save changes
+				tract.save((err) => {
+					if(err){
+						res.status(204).json({error: err});	
+					}else{
+						res.status(201)
+		          			.json(tract);
+					}
+				});
 			}
 		});
 	}

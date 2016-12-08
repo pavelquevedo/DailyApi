@@ -147,6 +147,24 @@ router.get('/detail/:daily_id/:employee_id', (req, res, next) =>{
 	}
 });
 
+/*PUT: daily_tract detail*/
+router.put('/dailyTract/:daily_id/:tract_id/:closed_status', (req, res, next) =>{
+	console.log('PUT: dailyTract detail', req.body);
+	if (!req.params.daily_id || !req.params.tract_id) {
+		res.status(403).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('UPDATE daily_tract SET status_daily_tract = '+req.params.closed_status+
+									' WHERE daily_id = '+req.params.daily_id+' AND tract_id = '+req.params.tract_id, 
+									(err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				res.status(201).json(data);
+			}
+		});
+	}
+});
+
 /*GET: daily_detail sum trees*/
 router.get('/detail/:daily_id/:employee_id/:tract_id', (req, res, next) =>{
 	console.log('GET: daily_detail sum trees', req.body);
@@ -260,9 +278,9 @@ router.get('/employees/:id', (req, res, next) => {
 });
 
 /*GET: Daily's tracts*/
-router.get('/tracts/:id', (req, res, next) => {
+router.get('/tracts/:id/:active_status', (req, res, next) => {
 	console.log('GET: Dailys tracts', req.body);
-	if (!req.params.id) {
+	if (!req.params.id || !req.params.active_status) {
 		res.status(403).json({error: true, message: 'Petition empty'});
 	}else{
 		req.models.daily.get(req.params.id, (err, daily) => {
@@ -274,6 +292,7 @@ router.get('/tracts/:id', (req, res, next) => {
 					if(err){
 						res.status(204).json({error: err});
 					}else{
+						tracts = _.filter(tracts, {status_daily_tract: parseInt(req.params.active_status)});
 						res.status(200).json(tracts);
 					}
 				});
