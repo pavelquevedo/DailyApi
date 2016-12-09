@@ -18,18 +18,15 @@ router.use(orm.express(database.connectionString, {
 }));
 
 /*GET: Active supervisor's daily*/
-router.get('/activeDaily/:supervisor_id/:active_status/:in_progress_status', (req, res, next) =>{
+router.get('/activeDaily/:supervisor_id/:in_progress_status', (req, res, next) =>{
 	console.log('GET: tract detail', req.body);
-	if (!req.params.supervisor_id || !req.params.active_status || !req.params.in_progress_status) {
+	if (!req.params.supervisor_id || !req.params.in_progress_status) {
 		res.status(403).json({error: true, message: 'Petition empty'});
 	}else{
 		req.models.driver.execQuery('SELECT d.* FROM contract c '+
 									'INNER JOIN supervisor s ON s.id = c.supervisor_id '+
-									'INNER JOIN tract t ON t.contract_id = c.id '+
-									'INNER JOIN daily_tract dt ON dt.tract_id = t.id '+
-									'INNER JOIN daily d ON d.id = dt.daily_id '+
-									'WHERE dt.status_daily_tract = '+req.params.active_status+
-									' AND c.status_id = '+req.params.in_progress_status+
+									'INNER JOIN daily d ON d.contract_id = c.id '+
+									'WHERE c.status_id = '+req.params.in_progress_status+
 									' AND d.status_daily_id = '+req.params.in_progress_status+
 									' AND s.id = '+req.params.supervisor_id, (err, data) => {
 			if(err){
@@ -377,27 +374,6 @@ router.post('/employeeDetail/:daily_id', (req, res, next) =>{
 							}
 						}
 					});
-
-					/*console.log('status daily employee: ', currentEmployee.statusDailyEmployee);
-					//Get employee
-					req.models.employee.get(currentEmployee.id, (err, employee) =>{
-						//Print
-						
-						//status
-						var status_daily_employee = currentEmployee.statusDailyEmployee;
-						if (err){
-							res.status(204).json({error: err});
-						}else{
-							daily.addEmployee(employee, {status_daily_employee: currentEmployee.statusDailyEmployee}, (err) => {
-								
-								if(err){
-									res.status(204).json({error: err});		
-								}else{
-									currentEmployee = null;
-								}
-							});	
-						}					
-					});*/
 				}							
 			}
 		});

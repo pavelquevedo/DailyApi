@@ -186,7 +186,26 @@ router.post('/employeeDetail', (req, res, next) =>{
 	}
 });
 
-/*GET: Active employee's tract*/
+/*PUT: Close tract_employee details*/
+router.put('/closeTractEmployeeDetails/:tract_id/:closed_status', (req, res, next) =>{
+	console.log('PUT: Close active tract_employee details', req.body);
+	if(!req.params.closed_status || !req.params.tract_id){
+		res.status(403).json({error:true, message: 'Petition empty'});
+	}else{
+		//Set active tract
+		req.models.driver.execQuery('UPDATE tract_employee SET status_tract_employee = '+req.params.closed_status+
+										' WHERE tract_id = '+req.params.tract_id, (err, data) => {
+			if(err){
+				res.status(204).json({err: err});
+			}else{
+				res.status(201).json(data);
+			}
+		});
+				
+	}
+});
+
+/*GET: Active daily employees*/
 router.post('/dailyEmployees/:daily_id/:active_status', (req, res, next) =>{
 	console.log('GET: Active employees tract', req.body);
 	if(!req.params.active_status){
@@ -198,7 +217,7 @@ router.post('/dailyEmployees/:daily_id/:active_status', (req, res, next) =>{
 										'inner join tract_employee te on te.employee_id = e.id '+
 										'where de.daily_id = '+ req.params.daily_id + 
 										' and de.status_daily_employee = '+ req.params.active_status +
-										' and te.status_tract_employee = '+ req.params.active_status, (err, data) => {
+										' and te.status_tract_employee = '+ req.params.active_status + ' ORDER BY e.id ASC', (err, data) => {
 			if(err){
 				res.status(204).json({err: err});
 			}else{
