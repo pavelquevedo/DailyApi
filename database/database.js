@@ -9,6 +9,7 @@ var opts = {
   password: "allyouneediscode",
   query    : { pool: true },
   acquireTimeout: 1000000,
+  dateStrings: "date",
   sslca: "config/rds-combined-ca-bundle.pem"
 }
 
@@ -178,6 +179,7 @@ module.exports.define = function(db){
 	db.models.daily.hasMany("employee", db.models.employee, {status_daily_employee:{type:'integer'}}, {key:true});
 	db.models.daily.hasOne('daily_type', db.models.daily_type);
 	db.models.daily.hasOne('status_daily', db.models.status);
+	db.models.daily.hasOne('contract', db.models.contract, {reverse: 'dailies'});
 
 	db.define('daily_detail', {
 		id: {type: 'serial', key: true},
