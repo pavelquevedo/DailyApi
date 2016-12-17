@@ -139,50 +139,26 @@ router.post('/employeeDetail', (req, res, next) =>{
 		for (var i = 0; i < employees.length; i++) {
 			//get employee id
 			var currentEmployee = employees[i];
+
+			// var query = 'CALL spiu_daily_tract_employee('+currentEmployee.tract_id+','+currentEmployee.id+','+currentEmployee.statusDailyEmployee+')';
+			var query = 'INSERT INTO tract_employee (tract_id, employee_id, status_tract_employee) VALUES('
+			+currentEmployee.tract_id+','+currentEmployee.id+','+currentEmployee.statusDailyEmployee+') '+
+			'ON DUPLICATE KEY UPDATE tract_id='+currentEmployee.tract_id+', employee_id='+currentEmployee.id+', status_tract_employee=' + currentEmployee.statusDailyEmployee;
+			console.log(query);
 			//Exec query	
-			req.models.driver.execQuery('INSERT INTO tract_employee(tract_id, employee_id, status_tract_employee) VALUES('+currentEmployee.tract_id+','+currentEmployee.id+','+currentEmployee.statusDailyEmployee+')', (err, data) => {
+			req.models.driver.execQuery(query, (err, data) => {
 				if(err){
-					contador = contador + 1;
-					console.log(contador);
-					//res.status(200).json({err: err});
-					//throw err;
+					res.status(204);
 				}else{
+					console.log(query);
 					contador = contador + 1;
 					console.log(contador);
 					if (contador == total) {
 						res.status(201).json({success:true});
 					}
 				}
-			});
-
-			//agregarDetalleTractEmployee(req.models.driver, tract_id, employeeId, status_tract_employee);
-
-			//Get employee
-			/*req.models.tract.get(tract_id, (err, tract) =>{
-				if(err){
-					console.log('error en get tract');
-					//res.status(204).json({error: err});
-				}else{
-					req.models.employee.get(employeeId, (err, employee)=>{
-						if(err){
-							//res.status(204).json({error: err});
-							console.log('error en get employee');
-						}else{
-							tract.addEmployee(employee, {status_tract_employee: 3}, (err) => {
-								if(err){
-									console.log('error en add employee');
-									//res.status(204).json({error: err});
-								}else{
-									console.log('employee: ',employeeId);
-								}
-							});
-						}
-					});				
-				}
-			});*/		 	
-		 }
-		 
-		
+			});	 	
+		}
 	}
 });
 
