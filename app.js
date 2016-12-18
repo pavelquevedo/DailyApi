@@ -17,6 +17,9 @@ var contractController = require('./controllers/contract');
 var stateController = require('./controllers/state');
 var tractController = require('./controllers/tract');
 var dailyController = require('./controllers/daily');
+//Public controllers
+var supervisorPublicController = require('./controllers/supervisorPublic');
+var employeePublicController  = require('./controllers/employeePublic');
 
 var app = express();
 
@@ -33,11 +36,14 @@ app.use(cors());
 
 //Routes
 app.use('/auth', authController);
+app.use('/supervisorsPublic', supervisorPublicController);
+app.use('/employeesPublic', employeePublicController);
+
+//Protected routes
+app.use(auth_middle);
 app.use('/supervisors', supervisorController);
 app.use('/employees', employeeController);
 app.use('/contracts', contractController);
-//Protected routes
-//app.use(auth_middle);
 app.use('/invoices', invoiceController);
 app.use('/states', stateController);
 app.use('/tracts', tractController);
