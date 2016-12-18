@@ -13,6 +13,18 @@ router.use(orm.express(database.connectionString, {
   }
 }));
 
+var crypto = require('crypto'),
+	algorithm = 'aes-256-ctr',
+	password = 'D41LY'
+
+
+function encrypt(text){
+	var cipher = crypto.createCipher(algorithm, password);
+	var crypted = cipher.update(text, 'utf8', 'hex');
+	crypted += cipher.final('hex');
+	return crypted;
+}
+
 /*POST: A single supervisor*/
 router.post('/', function(req, res, next){
 	console.log('POST: supervisor', req.body);
