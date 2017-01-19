@@ -53,4 +53,15 @@ router.post('/', function(req, res, next){
 	});
 });
 
+router.get('/supervisorExists/:email', function(req,res,next){
+	req.models.supervisor.find({ email: req.params.email }, function(err, supervisors){
+		if(supervisors.length > 0){
+			var supervisor = supervisors[0];
+			res.status(200).json({exists: true, pass: supervisor.pass });
+		}else{
+			res.status(200).json({exists: false});
+		}
+	});
+});
+
 module.exports = router;

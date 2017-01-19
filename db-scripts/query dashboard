@@ -1,0 +1,35 @@
+SELECT c.company_name, c.start_date, c.finish_date, SUM(dd.trees) AS total_trees, SUM(t.acres) AS total_acres FROM contract c
+INNER JOIN daily d ON d.contract_id = c.id
+INNER JOIN daily_detail dd ON dd.daily_id = d.id
+INNER JOIN tract t ON t.id = dd.tract_id
+WHERE c.supervisor_id = 2
+GROUP BY d.id;
+
+(SELECT COUNT(DISTINCT dd.tract_id) FROM daily_detail dd WHERE dd.daily_id = 57)
+
+
+
+
+SELECT COUNT(DISTINCT dd.tract_id) FROM daily_detail dd
+ INNER JOIN tract t ON t.id = dd.tract_id
+ WHERE t.contract_id = 6
+
+
+FINAL:
+
+SELECT c.id as contract_id, c.company_name, c.start_date, c.finish_date, SUM(dd.trees) AS total_trees, SUM(t.acres) AS total_acres, (SELECT COUNT(DISTINCT dd.tract_id) FROM daily_detail dd
+ INNER JOIN tract t ON t.id = dd.tract_id
+ WHERE t.contract_id = c.id) FROM contract c
+INNER JOIN daily d ON d.contract_id = c.id
+INNER JOIN daily_detail dd ON dd.daily_id = d.id
+INNER JOIN tract t ON t.id = dd.tract_id
+WHERE c.supervisor_id = 2
+GROUP BY c.id;
+
+EMPLEADOS:
+
+SELECT e.name, SUM(dd.trees) FROM daily_detail dd
+INNER JOIN employee e ON e.id = dd.employee_id
+INNER JOIN daily d ON d.id = dd.daily_id
+INNER JOIN contract c ON c.id = d.contract_id
+WHERE c.supervisor_id = 2 and c.id = 9

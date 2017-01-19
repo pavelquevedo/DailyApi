@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var orm = require('orm');
 var auth_middle = require('./middleware/auth');
 var cors = require('cors');
+var mailer = require('express-mailer');
+var general = require('./config/dailycrypto');
 
 //Controllers
 var authController = require('./controllers/auth');
@@ -34,13 +36,44 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
+mailer.extend(app, {
+  from: 'no-reply@example.com',
+  host: 'smtp.gmail.com', // hostname
+  secureConnection: true, // use SSL
+  port: 465, // port for secure SMTP
+  transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts
+  auth: {
+    user: 'dailyappmail@gmail.com',
+    pass: 'Dailyapp123'
+  }
+});
+
+/*SEND RECOVERY PASSWORD EMAIL ROUTE*/
+app.get('/sendRecoveryPassMail/:email/:pass', function(req,res,next){
+  app.mailer.send('recoveryPasswordMail',
+  {
+    to: req.params.email,
+    subject: 'Recuperar contraseña',
+    pass: general.decrypt(req.params.pass)
+  }, function(err){
+    if (err) {
+      console.log(err);
+      res.status(500);
+    }
+    res.status(200).json({message: 'email sent'});
+  })
+});
+
 //Routes
 app.use('/auth', authController);
 app.use('/supervisorsPublic', supervisorPublicController);
 app.use('/employeesPublic', employeePublicController);
 
 //Protected routes
-app.use(auth_middle);
+//app.use(auth_middle);
 app.use('/supervisors', supervisorController);
 app.use('/employees', employeeController);
 app.use('/contracts', contractController);

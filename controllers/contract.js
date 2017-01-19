@@ -14,8 +14,38 @@ router.use(orm.express(database.connectionString, {
   define: function(db, models){
     database.define(db);
     models.contract = db.models.contract;
+    models.driver = db.driver;
   }
 }));
+
+/*GET: daily dashboard*/
+router.get('/dashboard/:supervisor_id', (req, res, next) =>{
+	console.log('GET: daily dashboard', req.body);
+	if (!req.params.supervisor_id) {
+		res.status(409).json({error: true, message: 'Petition empty'});
+	}else{
+		req.models.driver.execQuery('SELECT c.id as contract_id, c.company_name, c.start_date, c.finish_date, '+
+			'SUM(dd.trees) AS total_trees, SUM(t.acres) AS total_acres, (SELECT COUNT(DISTINCT dd.tract_id) FROM daily_detail dd '+
+ 			'INNER JOIN tract t ON t.id = dd.tract_id '+
+			'WHERE t.contract_id = c.id) as total_tracts FROM contract c '+
+			'INNER JOIN daily d ON d.contract_id = c.id '+
+			'INNER JOIN daily_detail dd ON dd.daily_id = d.id '+
+			'INNER JOIN tract t ON t.id = dd.tract_id '+
+			'WHERE c.supervisor_id = '+ req.params.supervisor_id +
+			' GROUP BY c.id LIMIT 5;', (err, data) => {
+			if(err){
+				res.status(409).json({err: err});
+			}else{
+				if (data.length > 0) {
+					res.status(200).json(data);	
+				}else{
+					res.status(409)
+				}				
+			}
+		});
+
+	}
+});
 
 /*POST: single/list contract*/
 router.post('/', (req, res, next) => {
