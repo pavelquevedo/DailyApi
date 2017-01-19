@@ -73,7 +73,7 @@ app.use('/supervisorsPublic', supervisorPublicController);
 app.use('/employeesPublic', employeePublicController);
 
 //Protected routes
-//app.use(auth_middle);
+app.use(auth_middle);
 app.use('/supervisors', supervisorController);
 app.use('/employees', employeeController);
 app.use('/contracts', contractController);
