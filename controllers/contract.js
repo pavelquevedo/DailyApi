@@ -24,7 +24,7 @@ router.get('/dashboard/:supervisor_id', (req, res, next) =>{
 	if (!req.params.supervisor_id) {
 		res.status(409).json({error: true, message: 'Petition empty'});
 	}else{
-		req.models.driver.execQuery('SELECT c.id as contract_id, c.company_name, c.start_date, c.finish_date, '+
+		req.models.driver.execQuery('SELECT c.id as contract_id, c.supervisor_id, c.company_name, c.start_date, c.finish_date, '+
 			'SUM(dd.trees) AS total_trees, SUM(t.acres) AS total_acres, (SELECT COUNT(DISTINCT dd.tract_id) FROM daily_detail dd '+
  			'INNER JOIN tract t ON t.id = dd.tract_id '+
 			'WHERE t.contract_id = c.id) as total_tracts FROM contract c '+
@@ -32,18 +32,55 @@ router.get('/dashboard/:supervisor_id', (req, res, next) =>{
 			'INNER JOIN daily_detail dd ON dd.daily_id = d.id '+
 			'INNER JOIN tract t ON t.id = dd.tract_id '+
 			'WHERE c.supervisor_id = '+ req.params.supervisor_id +
-			' GROUP BY c.id LIMIT 5;', (err, data) => {
+			' GROUP BY c.id ORDER BY c.start_date DESC LIMIT 5;', (err, dashboardItems) => {
 			if(err){
 				res.status(409).json({err: err});
 			}else{
-				if (data.length > 0) {
-					res.status(200).json(data);	
+				if (dashboardItems.length > 0) {
+					res.status(200).json(dashboardItems);	
 				}else{
-					res.status(409)
+					res.status(409);
 				}				
 			}
 		});
+	}
+});
 
+/*GET: daily dashboard item's employees*/
+router.post('/dashboardEmployees/:supervisor_id/', (req, res, next) =>{
+	console.log('GET: daily dashboard items employees', req.body);
+	if (!req.params.supervisor_id || general.isEmptyObject(req.body)) {
+		res.status(409).json({error: true, message: 'Petition empty'});
+	}else{
+		var contracts = "";
+		var items = req.body;
+		for (var i = 0; i < items.length; i++) {
+			if (i == items.length - 1) {
+				contracts += items[i].contract_id;
+			}else{
+				contracts += items[i].contract_id + ",";
+			}			
+		}
+
+		console.log(contracts);
+
+		req.models.driver.execQuery('SELECT e.name, SUM(dd.trees) as total_trees, c.id as contract_id FROM daily_detail dd '+
+									'INNER JOIN employee e ON e.id = dd.employee_id '+
+									'INNER JOIN daily d ON d.id = dd.daily_id '+
+									'INNER JOIN contract c ON c.id = d.contract_id '+
+									'WHERE c.supervisor_id = '+req.params.supervisor_id+' and c.id IN ('+contracts+') '+
+									'GROUP BY c.id ORDER BY dd.trees DESC LIMIT 5;', 
+									(err, employees) => {
+			if(err){
+				res.status(409).json({err: err});
+			}else{
+				if (employees.length > 0) {
+					res.status(200).json(employees);	
+				}else{
+					res.status(409);
+				}				
+			}
+		});
 	}
 });
 
