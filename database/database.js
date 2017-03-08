@@ -4,12 +4,13 @@ var connection = null;
 var opts = {
   database: "dailyapi",
   protocol: "mysql",
-  host: "allyouneediscode.c7npagn7amao.us-west-2.rds.amazonaws.com",
+  host: "allyouneediscode.cjhtgcup5w2d.us-west-2.rds.amazonaws.com",
   user: "root",
   password: "allyouneediscode",
   query    : { pool: true },
   acquireTimeout: 1000000,
-  dateStrings: "date",
+  dateStrings: true,
+  timezone: "utc",
   sslca: "config/rds-combined-ca-bundle.pem"
 }
 
